@@ -2,19 +2,21 @@
 import { ref, computed } from 'vue'
 import Dashboard from '../components/Dashboard.vue'
 import Settings from '../components/Settings.vue'
+import LandingPage from '../components/LandingPage.vue'
 
 const drawer = ref(true)
 const rail = ref(false)
 const currentTheme = ref('light')
 
 const items = [
-  { title: 'لوحة التحكم', icon: 'mdi-view-dashboard', route: '/' },
-  { title: 'المستخدمون', icon: 'mdi-account-group', route: '/users' },
+  // { title: 'الرئيسية', icon: 'mdi-home', route: '/' },
+  { title: 'لوحة التحكم', icon: 'mdi-view-dashboard', route: '/dashboard' },
+  { title: 'المشاريع', icon: 'mdi-crane', route: '/projects' },
   { title: 'التقارير', icon: 'mdi-chart-bar', route: '/reports' },
   { title: 'الإعدادات', icon: 'mdi-cog', route: '/settings' }
 ]
 
-const currentRoute = ref('/')
+const currentRoute = ref('/dashboard')
 
 function navigateTo(route) {
   currentRoute.value = route
@@ -67,7 +69,7 @@ const isDark = computed({
 
   <v-app-bar elevation="1">
     <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-    <v-app-bar-title>تطبيق Vue 3 مع Vuetify 3</v-app-bar-title>
+    <v-app-bar-title>منصة إعادة إعمار سوريا</v-app-bar-title>
     <v-spacer></v-spacer>
     <v-btn icon @click="isDark = !isDark">
       <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
@@ -85,7 +87,8 @@ const isDark = computed({
   <v-main>
     <transition name="slide-fade" mode="out-in">
       <keep-alive>
-        <Dashboard v-if="currentRoute === '/'" />
+        <LandingPage v-if="currentRoute === '/'" />
+        <Dashboard v-else-if="currentRoute === '/dashboard'" />
         <Settings v-else-if="currentRoute === '/settings'" />
         <v-container v-else>
           <v-row>
@@ -111,7 +114,7 @@ const isDark = computed({
 
   <v-footer app class="d-flex flex-column">
     <div class="text-center w-100">
-      <span>&copy; {{ new Date().getFullYear() }} - تطبيق Vue 3 مع Vuetify 3</span>
+      <span>&copy; {{ new Date().getFullYear() }} - منصة إعادة إعمار سوريا</span>
     </div>
   </v-footer>
 </template>
