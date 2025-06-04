@@ -7,7 +7,8 @@ const settings = ref({
   language: 'ar',
   emailNotifications: true,
   privateProfile: false,
-  autoSave: true
+  autoSave: true,
+  theme: 'light'  // أضفت هذه السطر
 })
 
 const languages = [
@@ -44,39 +45,23 @@ const themes = [
                   <v-switch v-model="settings.darkMode" color="primary" hide-details></v-switch>
                 </template>
               </v-list-item>
-              
+
               <v-list-item>
                 <v-list-item-title>اللغة</v-list-item-title>
                 <template v-slot:append>
-                  <v-select
-                    v-model="settings.language"
-                    :items="languages"
-                    item-title="title"
-                    item-value="value"
-                    hide-details
-                    variant="plain"
-                    density="compact"
-                    style="max-width: 150px"
-                  ></v-select>
+                  <v-select v-model="settings.language" :items="languages" item-title="title" item-value="value"
+                    hide-details variant="plain" density="compact" style="max-width: 150px"></v-select>
                 </template>
               </v-list-item>
-              
+
               <v-list-item>
                 <v-list-item-title>السمة</v-list-item-title>
                 <template v-slot:append>
-                  <v-select
-                    v-model="settings.theme"
-                    :items="themes"
-                    item-title="title"
-                    item-value="value"
-                    hide-details
-                    variant="plain"
-                    density="compact"
-                    style="max-width: 150px"
-                  ></v-select>
+                  <v-select v-model="settings.theme" :items="themes" item-title="title" item-value="value" hide-details
+                    variant="plain" density="compact" style="max-width: 150px"></v-select>
                 </template>
               </v-list-item>
-              
+
               <v-list-item>
                 <v-list-item-title>ملف تعريف خاص</v-list-item-title>
                 <template v-slot:append>
@@ -87,7 +72,7 @@ const themes = [
           </v-card-text>
         </v-card>
       </v-col>
-      
+
       <v-col cols="12" md="6">
         <v-card>
           <v-card-title>
@@ -102,14 +87,14 @@ const themes = [
                   <v-switch v-model="settings.notifications" color="primary" hide-details></v-switch>
                 </template>
               </v-list-item>
-              
+
               <v-list-item>
                 <v-list-item-title>إشعارات البريد الإلكتروني</v-list-item-title>
                 <template v-slot:append>
                   <v-switch v-model="settings.emailNotifications" color="primary" hide-details></v-switch>
                 </template>
               </v-list-item>
-              
+
               <v-list-item>
                 <v-list-item-title>حفظ تلقائي</v-list-item-title>
                 <template v-slot:append>
@@ -119,7 +104,7 @@ const themes = [
             </v-list>
           </v-card-text>
         </v-card>
-        
+
         <v-card class="mt-4">
           <v-card-actions>
             <v-spacer></v-spacer>

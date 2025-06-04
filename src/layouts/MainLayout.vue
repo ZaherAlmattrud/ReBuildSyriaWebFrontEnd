@@ -18,7 +18,7 @@ const items = [
 
 const currentRoute = ref('/dashboard')
 
-function navigateTo(route) {
+function navigateTo(route: string) {
   currentRoute.value = route
 }
 
