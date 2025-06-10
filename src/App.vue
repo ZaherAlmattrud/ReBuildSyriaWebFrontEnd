@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import MainLayout from './layouts/MainLayout.vue'
 import LandingPage from './components/LandingPage.vue'
 import LoginPage from './components/auth/LoginPage.vue'
@@ -8,9 +8,27 @@ import ForgotPasswordPage from './components/auth/ForgotPasswordPage.vue'
 
 const isAuthenticated = ref(false)
 const currentRoute = ref('/')
+const currentUser = ref(null)
 
-const handleLogin = () => {
+// Check if user is already logged in on app start
+onMounted(() => {
+  const savedUser = localStorage.getItem('user')
+  if (savedUser) {
+    currentUser.value = JSON.parse(savedUser)
+    isAuthenticated.value = true
+  }
+})
+
+const handleLogin = (user) => {
   isAuthenticated.value = true
+  currentUser.value = user
+}
+
+const handleLogout = () => {
+  localStorage.removeItem('user')
+  isAuthenticated.value = false
+  currentUser.value = null
+  currentRoute.value = '/'
 }
 
 const navigateTo = (route: string) => {
@@ -21,7 +39,7 @@ const navigateTo = (route: string) => {
 <template>
   <v-app>
     <template v-if="isAuthenticated">
-      <MainLayout />
+      <MainLayout :user="currentUser" @logout="handleLogout" />
     </template>
     <template v-else>
       <v-app-bar elevation="1">

@@ -1,24 +1,28 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, defineProps, defineEmits } from 'vue'
 import Dashboard from '../components/Dashboard.vue'
 import Settings from '../components/Settings.vue'
+import Projects from '../components/Projects.vue'
 import LandingPage from '../components/LandingPage.vue'
+
+const props = defineProps(['user'])
+const emit = defineEmits(['logout'])
 
 const drawer = ref(true)
 const rail = ref(false)
 const currentTheme = ref('light')
 
 const items = [
-  // { title: 'الرئيسية', icon: 'mdi-home', route: '/' },
+  { title: 'الرئيسية', icon: 'mdi-home', route: '/' },
   { title: 'لوحة التحكم', icon: 'mdi-view-dashboard', route: '/dashboard' },
   { title: 'المشاريع', icon: 'mdi-crane', route: '/projects' },
   { title: 'التقارير', icon: 'mdi-chart-bar', route: '/reports' },
   { title: 'الإعدادات', icon: 'mdi-cog', route: '/settings' }
 ]
 
-const currentRoute = ref('/dashboard')
+const currentRoute = ref('/')
 
-function navigateTo(route: string) {
+function navigateTo(route) {
   currentRoute.value = route
 }
 
@@ -28,6 +32,23 @@ const isDark = computed({
     currentTheme.value = value ? 'dark' : 'light'
   }
 })
+
+const getUserAvatar = () => {
+  // Generate avatar based on user role
+  const avatars = {
+    1: 'https://randomuser.me/api/portraits/men/32.jpg', // مواطن
+    2: 'https://randomuser.me/api/portraits/men/85.jpg', // جهة حكومية
+    3: 'https://randomuser.me/api/portraits/women/44.jpg', // منظمة
+    4: 'https://randomuser.me/api/portraits/men/76.jpg', // مقاول
+    5: 'https://randomuser.me/api/portraits/women/68.jpg', // جهة تقييم
+    6: 'https://randomuser.me/api/portraits/men/54.jpg' // إعلام
+  }
+  return avatars[props.user?.role] || avatars[1]
+}
+
+const handleLogout = () => {
+  emit('logout')
+}
 </script>
 
 <template>
@@ -38,9 +59,9 @@ const isDark = computed({
     @click="rail = false"
   >
     <v-list-item
-      prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
-      title="محمد أحمد"
-      subtitle="مدير النظام"
+      :prepend-avatar="getUserAvatar()"
+      :title="user?.name || 'مستخدم'"
+      :subtitle="user?.type || 'غير محدد'"
     >
       <template v-slot:append>
         <v-btn
@@ -69,8 +90,20 @@ const isDark = computed({
 
   <v-app-bar elevation="1">
     <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-    <v-app-bar-title>منصة إعادة إعمار سوريا</v-app-bar-title>
+    <v-app-bar-title>ReBuildSyria</v-app-bar-title>
     <v-spacer></v-spacer>
+    
+    <!-- User role indicator -->
+    <v-chip
+      v-if="user"
+      :color="user.role === 2 ? 'success' : 'primary'"
+      variant="outlined"
+      size="small"
+      class="ml-2"
+    >
+      {{ user.type }}
+    </v-chip>
+    
     <v-btn icon @click="isDark = !isDark">
       <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
     </v-btn>
@@ -82,6 +115,11 @@ const isDark = computed({
         dot
       ></v-badge>
     </v-btn>
+    
+    <!-- Logout button -->
+    <v-btn icon @click="handleLogout">
+      <v-icon>mdi-logout</v-icon>
+    </v-btn>
   </v-app-bar>
 
   <v-main>
@@ -89,6 +127,7 @@ const isDark = computed({
       <keep-alive>
         <LandingPage v-if="currentRoute === '/'" />
         <Dashboard v-else-if="currentRoute === '/dashboard'" />
+        <Projects v-else-if="currentRoute === '/projects'" :user="user" />
         <Settings v-else-if="currentRoute === '/settings'" />
         <v-container v-else>
           <v-row>
@@ -114,7 +153,7 @@ const isDark = computed({
 
   <v-footer app class="d-flex flex-column">
     <div class="text-center w-100">
-      <span>&copy; {{ new Date().getFullYear() }} - منصة إعادة إعمار سوريا</span>
+      <span>&copy; {{ new Date().getFullYear() }} - ReBuildSyria</span>
     </div>
   </v-footer>
 </template>
