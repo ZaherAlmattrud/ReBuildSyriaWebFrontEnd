@@ -3,7 +3,6 @@ import { ref, computed, defineProps, defineEmits } from 'vue'
 import Dashboard from '../components/Dashboard.vue'
 import Settings from '../components/Settings.vue'
 import Projects from '../components/Projects.vue'
-import LandingPage from '../components/LandingPage.vue'
 
 const props = defineProps(['user'])
 const emit = defineEmits(['logout'])
@@ -12,15 +11,30 @@ const drawer = ref(true)
 const rail = ref(false)
 const currentTheme = ref('light')
 
-const items = [
-  { title: 'الرئيسية', icon: 'mdi-home', route: '/' },
-  { title: 'لوحة التحكم', icon: 'mdi-view-dashboard', route: '/dashboard' },
-  { title: 'المشاريع', icon: 'mdi-crane', route: '/projects' },
-  { title: 'التقارير', icon: 'mdi-chart-bar', route: '/reports' },
-  { title: 'الإعدادات', icon: 'mdi-cog', route: '/settings' }
-]
+// Navigation items based on user role
+const getNavigationItems = () => {
+  if (!props.user) return []
+  
+  // For citizens (role 1), only show Dashboard and Settings
+  if (props.user.role === 1) {
+    return [
+      { title: 'لوحة التحكم', icon: 'mdi-view-dashboard', route: '/dashboard' },
+      { title: 'الإعدادات', icon: 'mdi-cog', route: '/settings' }
+    ]
+  }
+  
+  // For other roles, show all items
+  return [
+    { title: 'لوحة التحكم', icon: 'mdi-view-dashboard', route: '/dashboard' },
+    { title: 'المشاريع', icon: 'mdi-crane', route: '/projects' },
+    { title: 'التقارير', icon: 'mdi-chart-bar', route: '/reports' },
+    { title: 'الإعدادات', icon: 'mdi-cog', route: '/settings' }
+  ]
+}
 
-const currentRoute = ref('/')
+const items = computed(() => getNavigationItems())
+
+const currentRoute = ref('/dashboard') // Start with dashboard instead of home
 
 function navigateTo(route) {
   currentRoute.value = route
@@ -125,8 +139,7 @@ const handleLogout = () => {
   <v-main>
     <transition name="slide-fade" mode="out-in">
       <keep-alive>
-        <LandingPage v-if="currentRoute === '/'" />
-        <Dashboard v-else-if="currentRoute === '/dashboard'" />
+        <Dashboard v-if="currentRoute === '/dashboard'" :user="user" />
         <Projects v-else-if="currentRoute === '/projects'" :user="user" />
         <Settings v-else-if="currentRoute === '/settings'" />
         <v-container v-else>
@@ -137,11 +150,11 @@ const handleLogout = () => {
                 <p class="text-body-1">هذه الصفحة قيد التطوير.</p>
                 <v-btn
                   color="primary"
-                  prepend-icon="mdi-home"
+                  prepend-icon="mdi-view-dashboard"
                   class="mt-4"
-                  @click="navigateTo('/')"
+                  @click="navigateTo('/dashboard')"
                 >
-                  العودة للرئيسية
+                  العودة للوحة التحكم
                 </v-btn>
               </v-sheet>
             </v-col>
